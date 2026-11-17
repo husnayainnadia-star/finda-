@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FINDA – Find What You Lost
 
-## Getting Started
+Platform kehilangan dan penemuan barang untuk kampus, sekolah, masjid, dan tempat umum.
 
-First, run the development server:
+## Tech Stack
+
+- **Next.js 15** (App Router)
+- **TypeScript**
+- **Tailwind CSS**
+- **Supabase** (auth, database, storage)
+- **Lucide React** (icons)
+
+---
+
+## Cara Menjalankan (Mode Demo)
+
+Aplikasi sudah bisa dijalankan tanpa Supabase menggunakan **Demo Mode** — data tersimpan di localStorage browser.
 
 ```bash
+cd finda-app
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> Di mode demo, gunakan email & password apa saja untuk login/register.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Setup Supabase (Production)
 
-To learn more about Next.js, take a look at the following resources:
+### 1. Buat project di Supabase
+Buka [https://supabase.com](https://supabase.com) dan buat project baru.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Jalankan SQL setup
+Buka **SQL Editor** di dashboard Supabase, lalu copy-paste dan jalankan isi file `supabase-setup.sql`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Update environment variables
+Edit file `.env.local`:
 
-## Deploy on Vercel
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+NEXT_PUBLIC_DEMO_MODE=false
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Dapatkan URL dan anon key dari:  
+**Supabase Dashboard → Project Settings → API**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Deploy ke Vercel
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel --prod
+```
+
+Atau gunakan [https://vercel.com/import](https://vercel.com/import) dan hubungkan repo GitHub.
+
+Tambahkan environment variables di Vercel:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_DEMO_MODE` = `false`
+
+---
+
+## Struktur Folder
+
+```
+src/
+├── app/
+│   ├── splash/          # Onboarding
+│   ├── auth/            # Login & Register
+│   ├── home/            # Halaman utama
+│   ├── lost/
+│   │   ├── new/         # Form laporan hilang
+│   │   ├── success/     # Halaman sukses
+│   │   └── [id]/        # Detail laporan hilang
+│   ├── found/
+│   │   ├── new/         # Form laporan temuan
+│   │   ├── success/     # Halaman sukses
+│   │   └── [id]/        # Detail laporan temuan
+│   ├── search/          # Find & Match
+│   ├── notifications/   # Notifikasi
+│   └── profile/         # Profil pengguna
+├── components/
+│   ├── ui/              # Komponen UI reusable
+│   └── layout/          # Komponen layout
+├── context/             # Auth & Reports context
+├── lib/                 # Supabase client, constants, matching
+└── types/               # TypeScript types
+```
+
+---
+
+## Fitur
+
+- ✅ Splash screen & onboarding
+- ✅ Autentikasi (login/register/logout)
+- ✅ Laporan barang hilang
+- ✅ Laporan barang temuan
+- ✅ Upload foto barang
+- ✅ Pencarian & filter laporan
+- ✅ Sistem pencocokan (matching) otomatis
+- ✅ Halaman detail laporan
+- ✅ Notifikasi
+- ✅ Profil pengguna
+- ✅ Mode demo (tanpa Supabase)
+- ✅ Responsive mobile-first
+- ✅ Bottom navigation

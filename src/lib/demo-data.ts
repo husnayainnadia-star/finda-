@@ -1,0 +1,137 @@
+import { LostReport, FoundReport, Notification, Profile } from '@/types';
+
+export const DEMO_USER: Profile = {
+  id: 'demo-user-1',
+  full_name: 'Nadia',
+  email: 'nadia@example.com',
+  avatar_url: undefined,
+  created_at: new Date().toISOString(),
+};
+
+export const DEMO_LOST_REPORTS: LostReport[] = [
+  {
+    id: 'lost-1',
+    user_id: 'demo-user-1',
+    item_name: 'Dompet Pink Cream',
+    description:
+      'Dompet berwarna pink cream dengan isi KTP, SIM, dan kartu ATH. Ada foto keluarga di dalamnya.',
+    category: 'dompet',
+    last_seen_location: 'Masjid Nurul Musthofa',
+    lost_date: '2026-11-16',
+    image_url: undefined,
+    status: 'active',
+    created_at: new Date(Date.now() - 3600000).toISOString(),
+    profiles: DEMO_USER,
+  },
+  {
+    id: 'lost-2',
+    user_id: 'demo-user-2',
+    item_name: 'Kunci Motor Honda',
+    description: 'Kunci motor Honda Beat warna hitam dengan gantungan Hello Kitty merah.',
+    category: 'kunci',
+    last_seen_location: 'Parkiran Gedung A Kampus',
+    lost_date: '2026-11-15',
+    image_url: undefined,
+    status: 'active',
+    created_at: new Date(Date.now() - 7200000).toISOString(),
+    profiles: { id: 'demo-user-2', full_name: 'Budi', email: 'budi@example.com', created_at: '' },
+  },
+  {
+    id: 'lost-3',
+    user_id: 'demo-user-3',
+    item_name: 'Laptop Asus Hitam',
+    description: 'Laptop Asus TUF Gaming warna hitam, ada stiker bendera Indonesia di tutupnya.',
+    category: 'elektronik',
+    last_seen_location: 'Perpustakaan Lantai 2',
+    lost_date: '2026-11-14',
+    image_url: undefined,
+    status: 'active',
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    profiles: { id: 'demo-user-3', full_name: 'Sari', email: 'sari@example.com', created_at: '' },
+  },
+];
+
+export const DEMO_FOUND_REPORTS: FoundReport[] = [
+  {
+    id: 'found-1',
+    user_id: 'demo-user-4',
+    item_name: 'Dompet Pink Carlet',
+    description:
+      'Ditemukan dompet warna pink carlet berisi beberapa kartu identitas. Di temukan di area masjid.',
+    category: 'dompet',
+    found_location: 'Masjid Al-Ikhlas',
+    found_date: '2026-11-16',
+    contact_information: 'WhatsApp: 08123456789',
+    image_url: undefined,
+    status: 'active',
+    created_at: new Date(Date.now() - 1800000).toISOString(),
+    profiles: {
+      id: 'demo-user-4',
+      full_name: 'Ahmad',
+      email: 'ahmad@example.com',
+      created_at: '',
+    },
+  },
+  {
+    id: 'found-2',
+    user_id: 'demo-user-5',
+    item_name: 'Dompet Pink',
+    description: 'Dompet pink ditemukan di dekat kantin kampus. Berisi uang dan beberapa kartu.',
+    category: 'dompet',
+    found_location: 'Kantin Kampus Barat',
+    found_date: '2026-11-15',
+    contact_information: 'Instagram: @farah_finds',
+    image_url: undefined,
+    status: 'active',
+    created_at: new Date(Date.now() - 3600000).toISOString(),
+    profiles: { id: 'demo-user-5', full_name: 'Farah', email: 'farah@example.com', created_at: '' },
+  },
+  {
+    id: 'found-3',
+    user_id: 'demo-user-6',
+    item_name: 'Tas Ransel Biru',
+    description: 'Tas ransel biru ditemukan di halte bus. Berisi buku-buku kuliah.',
+    category: 'tas',
+    found_location: 'Halte Bus Kampus Timur',
+    found_date: '2026-11-14',
+    contact_information: 'Email: reza.found@gmail.com',
+    image_url: undefined,
+    status: 'active',
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    profiles: { id: 'demo-user-6', full_name: 'Reza', email: 'reza@example.com', created_at: '' },
+  },
+];
+
+export const DEMO_NOTIFICATIONS: Notification[] = [
+  {
+    id: 'notif-1',
+    user_id: 'demo-user-1',
+    title: 'Kemungkinan Cocok Ditemukan!',
+    message:
+      'Ada laporan barang temuan yang mungkin cocok dengan laporan kehilangan dompetmu. Cek sekarang!',
+    notification_type: 'match',
+    related_report_id: 'found-1',
+    is_read: false,
+    created_at: new Date(Date.now() - 900000).toISOString(),
+  },
+  {
+    id: 'notif-2',
+    user_id: 'demo-user-1',
+    title: 'Laporan Diterima',
+    message: 'Laporan kehilangan Dompet Pink Cream telah berhasil dikirim dan sedang aktif.',
+    notification_type: 'system',
+    related_report_id: 'lost-1',
+    is_read: false,
+    created_at: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    id: 'notif-3',
+    user_id: 'demo-user-1',
+    title: 'Seseorang Menghubungimu',
+    message: 'Ahmad ingin menghubungimu terkait barang yang kamu laporkan hilang.',
+    notification_type: 'contact',
+    related_report_id: 'lost-1',
+    is_read: true,
+    created_at: new Date(Date.now() - 7200000).toISOString(),
+  },
+];

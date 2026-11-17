@@ -72,13 +72,6 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#EEF4FF] max-w-md mx-auto pb-28">
       {/* Header */}
       <div className="px-5 pt-10 pb-4">
-        {IS_DEMO_MODE && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-3 py-2 text-xs text-amber-700 mb-3 flex items-center gap-2">
-            <span>⚠️</span>
-            <span><strong>Mode Demo</strong> – data tersimpan di browser lokal saja.</span>
-          </div>
-        )}
-
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-0.5">

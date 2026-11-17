@@ -24,4 +24,11 @@ export const CATEGORY_LABELS: Record<ItemCategory, string> = {
   lainnya: 'Lainnya',
 };
 
-export const IS_DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+// Demo mode: aktif secara default jika Supabase belum dikonfigurasi
+// atau jika NEXT_PUBLIC_DEMO_MODE tidak di-set ke 'false'
+const SUPABASE_CONFIGURED =
+  !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.NEXT_PUBLIC_SUPABASE_URL !== 'your_supabase_project_url';
+
+export const IS_DEMO_MODE =
+  process.env.NEXT_PUBLIC_DEMO_MODE !== 'false' || !SUPABASE_CONFIGURED;

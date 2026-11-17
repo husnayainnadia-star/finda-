@@ -6,7 +6,6 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 import { Button } from '@/components/ui/Button';
-import { IS_DEMO_MODE } from '@/lib/constants';
 
 type Mode = 'signin' | 'signup';
 
@@ -86,11 +85,9 @@ export default function AuthPage() {
             : 'Daftar gratis dan mulai temukan barangmu.'}
         </p>
 
-        {IS_DEMO_MODE && (
-          <div className="mt-3 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 text-xs text-amber-700">
-            <strong>Mode Demo:</strong> Gunakan email & password apa saja. Data tersimpan di browser lokal.
-          </div>
-        )}
+        <div className="mt-3 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 text-xs text-amber-700">
+          <strong>Mode Demo:</strong> Gunakan email & password apa saja. Data tersimpan di browser lokal.
+        </div>
       </div>
 
       {/* Form */}

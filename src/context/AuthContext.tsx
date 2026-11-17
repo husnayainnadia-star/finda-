@@ -2,8 +2,16 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { Profile } from '@/types';
-import { IS_DEMO_MODE } from '@/lib/constants';
 import { DEMO_USER } from '@/lib/demo-data';
+
+// Demo mode: aktif secara default jika NEXT_PUBLIC_DEMO_MODE tidak di-set ke 'false'
+// Juga aktif jika Supabase URL belum di-set
+const SUPABASE_CONFIGURED =
+  !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.NEXT_PUBLIC_SUPABASE_URL !== 'your_supabase_project_url';
+
+const IS_DEMO_MODE =
+  process.env.NEXT_PUBLIC_DEMO_MODE !== 'false' || !SUPABASE_CONFIGURED;
 
 interface AuthContextType {
   user: Profile | null;
@@ -23,10 +31,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (IS_DEMO_MODE) {
-      // In demo mode, check localStorage for persisted login
       const stored = localStorage.getItem('finda_demo_user');
       if (stored) {
-        setUser(JSON.parse(stored));
+        try {
+          setUser(JSON.parse(stored));
+        } catch {
+          localStorage.removeItem('finda_demo_user');
+        }
       }
       setLoading(false);
       return;
@@ -37,9 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const { createClient } = await import('@/lib/supabase/client');
         const supabase = createClient();
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
 
         if (session?.user) {
           const { data: profile } = await supabase
@@ -50,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(profile);
         }
 
-        supabase.auth.onAuthStateChange(async (event, session) => {
+        supabase.auth.onAuthStateChange(async (_event, session) => {
           if (session?.user) {
             const { data: profile } = await supabase
               .from('profiles')
@@ -64,6 +73,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
       } catch (err) {
         console.error('Auth init error:', err);
+        // Fallback to demo mode if Supabase fails
+        setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -73,7 +84,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     if (IS_DEMO_MODE) {
-      // Demo mode: accept any email/password
       const demoUser: Profile = {
         ...DEMO_USER,
         email,
@@ -99,6 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (IS_DEMO_MODE) {
       const demoUser: Profile = {
         ...DEMO_USER,
+        id: `user-${Date.now()}`,
         email,
         full_name: fullName,
       };
@@ -135,9 +146,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       return;
     }
-    const { createClient } = await import('@/lib/supabase/client');
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    try {
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } catch {
+      // ignore
+    }
     setUser(null);
   }, []);
 

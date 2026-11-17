@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useReports } from '@/context/ReportsContext';
@@ -13,8 +13,9 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { PageWrapper } from '@/components/layout/PageWrapper';
 import { CATEGORIES } from '@/lib/constants';
 import { ItemCategory } from '@/types';
+import { PageLoader } from '@/components/ui/LoadingSpinner';
 
-interface FormData {
+interface LostFormData {
   item_name: string;
   description: string;
   last_seen_location: string;
@@ -24,7 +25,7 @@ interface FormData {
   additional_info: string;
 }
 
-const INITIAL: FormData = {
+const INITIAL: LostFormData = {
   item_name: '',
   description: '',
   last_seen_location: '',
@@ -36,25 +37,31 @@ const INITIAL: FormData = {
 
 export default function LostNewPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { submitLostReport } = useReports();
   const { showToast } = useToast();
 
-  const [form, setForm] = useState<FormData>(INITIAL);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
-  const [loading, setLoading] = useState(false);
-  // imageFile kept for future Supabase upload
+  const [form, setForm] = useState<LostFormData>(INITIAL);
+  const [errors, setErrors] = useState<Partial<Record<keyof LostFormData, string>>>({});
+  const [submitting, setSubmitting] = useState(false);
   const [, setImageFile] = useState<File | null>(null);
 
-  if (!user) { router.replace('/auth'); return null; }
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/auth');
+    }
+  }, [user, loading, router]);
 
-  const update = (key: keyof FormData, val: string) => {
+  if (loading) return <PageLoader />;
+  if (!user) return null;
+
+  const update = (key: keyof LostFormData, val: string) => {
     setForm((p) => ({ ...p, [key]: val }));
     setErrors((p) => ({ ...p, [key]: '' }));
   };
 
   const validate = () => {
-    const errs: Partial<Record<keyof FormData, string>> = {};
+    const errs: Partial<Record<keyof LostFormData, string>> = {};
     if (!form.item_name.trim()) errs.item_name = 'Nama barang wajib diisi';
     if (!form.description.trim()) errs.description = 'Deskripsi wajib diisi';
     if (!form.last_seen_location.trim()) errs.last_seen_location = 'Lokasi terakhir wajib diisi';
@@ -66,7 +73,7 @@ export default function LostNewPage() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
-    setLoading(true);
+    setSubmitting(true);
     const result = await submitLostReport(
       {
         item_name: form.item_name.trim(),
@@ -78,7 +85,7 @@ export default function LostNewPage() {
       },
       user.id
     );
-    setLoading(false);
+    setSubmitting(false);
 
     if (result.error) {
       showToast(result.error, 'error');
@@ -90,7 +97,6 @@ export default function LostNewPage() {
   return (
     <div className="min-h-screen bg-[#EEF4FF] max-w-md mx-auto pb-28">
       <PageWrapper showBack backHref="/home">
-        {/* Hero */}
         <div className="flex flex-col items-center text-center mb-6">
           <LostIllustration />
           <h1 className="text-lg font-bold text-[#111111] mt-2">Laporkan Barang Hilang</h1>
@@ -153,7 +159,7 @@ export default function LostNewPage() {
             onChange={(e) => update('additional_info', e.target.value)}
           />
 
-          <Button type="submit" fullWidth loading={loading} size="lg" className="mt-2">
+          <Button type="submit" fullWidth loading={submitting} size="lg" className="mt-2">
             Kirim Laporan
           </Button>
         </form>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useReports } from '@/context/ReportsContext';
@@ -13,6 +13,7 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { PageWrapper } from '@/components/layout/PageWrapper';
 import { CATEGORIES } from '@/lib/constants';
 import { ItemCategory } from '@/types';
+import { PageLoader } from '@/components/ui/LoadingSpinner';
 
 interface FoundFormData {
   item_name: string;
@@ -36,16 +37,23 @@ const INITIAL: FoundFormData = {
 
 export default function FoundNewPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { submitFoundReport } = useReports();
   const { showToast } = useToast();
 
   const [form, setForm] = useState<FoundFormData>(INITIAL);
   const [errors, setErrors] = useState<Partial<Record<keyof FoundFormData, string>>>({});
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [, setImageFile] = useState<File | null>(null);
 
-  if (!user) { router.replace('/auth'); return null; }
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/auth');
+    }
+  }, [user, loading, router]);
+
+  if (loading) return <PageLoader />;
+  if (!user) return null;
 
   const update = (key: keyof FoundFormData, val: string) => {
     setForm((p) => ({ ...p, [key]: val }));
@@ -67,7 +75,7 @@ export default function FoundNewPage() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
-    setLoading(true);
+    setSubmitting(true);
     const result = await submitFoundReport(
       {
         item_name: form.item_name.trim(),
@@ -80,7 +88,7 @@ export default function FoundNewPage() {
       },
       user.id
     );
-    setLoading(false);
+    setSubmitting(false);
 
     if (result.error) {
       showToast(result.error, 'error');
@@ -92,7 +100,6 @@ export default function FoundNewPage() {
   return (
     <div className="min-h-screen bg-[#EEF4FF] max-w-md mx-auto pb-28">
       <PageWrapper showBack backHref="/home">
-        {/* Hero */}
         <div className="flex flex-col items-center text-center mb-6">
           <FoundIllustration />
           <h1 className="text-lg font-bold text-[#111111] mt-2">Laporkan Barang Temuan</h1>
@@ -159,7 +166,7 @@ export default function FoundNewPage() {
             error={errors.image_url}
           />
 
-          <Button type="submit" fullWidth loading={loading} size="lg" className="mt-2">
+          <Button type="submit" fullWidth loading={submitting} size="lg" className="mt-2">
             Kirim Laporan
           </Button>
         </form>

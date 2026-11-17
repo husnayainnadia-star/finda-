@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import { MapPin, Calendar, Tag, User, MessageCircle } from 'lucide-react';
 import { useReports } from '@/context/ReportsContext';
@@ -22,7 +22,7 @@ function formatDate(dateStr?: string) {
   });
 }
 
-export default function LostDetailPage() {
+function LostDetailContent() {
   const { id } = useParams<{ id: string }>();
   const { lostReports, foundReports, loadingReports } = useReports();
 
@@ -44,7 +44,6 @@ export default function LostDetailPage() {
   return (
     <div className="min-h-screen bg-[#EEF4FF] max-w-md mx-auto pb-28">
       <PageWrapper showBack backHref="/search">
-        {/* Item Image */}
         <div className="w-full h-56 rounded-3xl overflow-hidden bg-[#E2ECFF] mb-5">
           {report.image_url ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -54,13 +53,11 @@ export default function LostDetailPage() {
           )}
         </div>
 
-        {/* Header */}
         <div className="flex items-start justify-between gap-2 mb-4">
           <h1 className="text-xl font-bold text-[#111111] leading-tight">{report.item_name}</h1>
           <TypeBadge type="lost" />
         </div>
 
-        {/* Meta */}
         <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 mb-4 shadow-sm">
           <div className="flex items-center gap-3 text-sm">
             <div className="w-8 h-8 rounded-full bg-[#E2ECFF] flex items-center justify-center flex-shrink-0">
@@ -104,13 +101,11 @@ export default function LostDetailPage() {
           )}
         </div>
 
-        {/* Description */}
         <div className="bg-white rounded-3xl p-4 mb-4 shadow-sm">
           <p className="text-xs font-bold text-[#777777] uppercase tracking-wide mb-2">Deskripsi</p>
           <p className="text-sm text-[#111111] leading-relaxed">{report.description}</p>
         </div>
 
-        {/* Potential Matches */}
         {matches.length > 0 && (
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-3">
@@ -135,7 +130,6 @@ export default function LostDetailPage() {
           </div>
         )}
 
-        {/* CTA */}
         <Button fullWidth size="lg" className="flex items-center gap-2">
           <MessageCircle size={18} />
           Hubungi Pelapor
@@ -146,5 +140,13 @@ export default function LostDetailPage() {
       </PageWrapper>
       <BottomNav />
     </div>
+  );
+}
+
+export default function LostDetailPage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <LostDetailContent />
+    </Suspense>
   );
 }

@@ -45,7 +45,6 @@ function FoundDetailContent() {
   return (
     <div className="min-h-screen bg-[#EEF4FF] max-w-md mx-auto pb-28">
       <PageWrapper showBack backHref="/search">
-        {/* Item Image */}
         <div className="w-full h-56 rounded-3xl overflow-hidden bg-[#E2ECFF] mb-5">
           {report.image_url ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -55,13 +54,11 @@ function FoundDetailContent() {
           )}
         </div>
 
-        {/* Header */}
         <div className="flex items-start justify-between gap-2 mb-4">
           <h1 className="text-xl font-bold text-[#111111] leading-tight">{report.item_name}</h1>
           <TypeBadge type="found" />
         </div>
 
-        {/* Meta */}
         <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 mb-4 shadow-sm">
           <div className="flex items-center gap-3 text-sm">
             <div className="w-8 h-8 rounded-full bg-[#E8F5E9] flex items-center justify-center flex-shrink-0">
@@ -105,15 +102,13 @@ function FoundDetailContent() {
           )}
         </div>
 
-        {/* Description */}
         <div className="bg-white rounded-3xl p-4 mb-4 shadow-sm">
           <p className="text-xs font-bold text-[#777777] uppercase tracking-wide mb-2">Deskripsi</p>
           <p className="text-sm text-[#111111] leading-relaxed">{report.description}</p>
         </div>
 
-        {/* Contact info (revealed on tap) */}
         {showContact && (
-          <div className="bg-white rounded-3xl p-4 mb-4 shadow-sm border-2 border-green-200 animate-fade-in-up">
+          <div className="bg-white rounded-3xl p-4 mb-4 shadow-sm border-2 border-green-200">
             <div className="flex items-center gap-2 mb-2">
               <Phone size={16} className="text-green-600" />
               <p className="text-xs font-bold text-[#777777] uppercase tracking-wide">Kontak Penemu</p>
@@ -123,7 +118,6 @@ function FoundDetailContent() {
           </div>
         )}
 
-        {/* Potential Matches */}
         {matches.length > 0 && (
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-3">
@@ -148,7 +142,6 @@ function FoundDetailContent() {
           </div>
         )}
 
-        {/* CTA */}
         <Button
           fullWidth
           size="lg"

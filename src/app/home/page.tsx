@@ -55,8 +55,7 @@ export default function HomePage() {
     }
   }, [user, loading, router]);
 
-  if (loading) return <PageLoader />;
-  if (!user) return null;
+  if (loading || !user) return <PageLoader />;
 
   const firstName = user.full_name?.split(' ')[0] || 'Pengguna';
 

@@ -1,33 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  User, Mail, LogOut, Edit3, ChevronRight, Package, PackageSearch, Bell, Shield, Trash2, CheckCircle,
+  User, Mail, LogOut, Edit3, ChevronRight, Package, PackageSearch, Bell, Shield, CheckCircle,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useReports } from '@/context/ReportsContext';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageWrapper } from '@/components/layout/PageWrapper';
-import { Button } from '@/components/ui/Button';
 import { ReportCard } from '@/components/layout/ReportCard';
 import { useToast } from '@/components/ui/Toast';
+import { PageLoader } from '@/components/ui/LoadingSpinner';
 
 type ProfileTab = 'my-reports' | 'settings';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, signOut, updateProfile } = useAuth();
+  const { user, loading, signOut, updateProfile } = useAuth();
   const { lostReports, foundReports } = useReports();
   const { showToast } = useToast();
 
   const [tab, setTab] = useState<ProfileTab>('my-reports');
   const [editing, setEditing] = useState(false);
-  const [editName, setEditName] = useState(user?.full_name || '');
+  const [editName, setEditName] = useState('');
   const [savingName, setSavingName] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  if (!user) { router.replace('/auth'); return null; }
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/auth');
+    }
+    if (user) {
+      setEditName(user.full_name || '');
+    }
+  }, [user, loading, router]);
+
+  if (loading) return <PageLoader />;
+  if (!user) return null;
 
   const myLost = lostReports.filter((r) => r.user_id === user.id);
   const myFound = foundReports.filter((r) => r.user_id === user.id);
@@ -48,7 +58,7 @@ export default function ProfilePage() {
   };
 
   const initials = user.full_name
-    ? user.full_name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
+    ? user.full_name.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase()
     : '?';
 
   return (
@@ -133,7 +143,6 @@ export default function ProfilePage() {
 
         {tab === 'my-reports' ? (
           <div className="space-y-4">
-            {/* Lost reports */}
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Package size={15} className="text-[#527CE5]" />
@@ -150,7 +159,6 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Found reports */}
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <PackageSearch size={15} className="text-green-600" />
@@ -171,13 +179,13 @@ export default function ProfilePage() {
           <div className="space-y-3">
             <SettingItem icon={<Bell size={18} />} label="Pengaturan Notifikasi" />
             <SettingItem icon={<Shield size={18} />} label="Privasi & Keamanan" />
-            <SettingItem icon={<User size={18} />} label="Edit Profil" onClick={() => setEditing(true)} />
+            <SettingItem icon={<User size={18} />} label="Edit Profil" onClick={() => { setEditing(true); setTab('my-reports'); }} />
 
             <div className="mt-4">
               <button
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="w-full flex items-center gap-3 bg-red-50 border border-red-100 rounded-2xl px-4 py-3.5 text-red-500 font-semibold text-sm hover:bg-red-100 transition-colors"
+                className="w-full flex items-center gap-3 bg-red-50 border border-red-100 rounded-2xl px-4 py-3.5 text-red-500 font-semibold text-sm hover:bg-red-100 transition-colors disabled:opacity-60"
               >
                 <LogOut size={18} />
                 {loggingOut ? 'Keluar...' : 'Keluar'}

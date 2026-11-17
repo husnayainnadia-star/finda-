@@ -84,6 +84,8 @@ export default function AuthPage() {
             ? 'Masuk untuk mengelola laporan kehilangan dan temuanmu.'
             : 'Daftar gratis dan mulai temukan barangmu.'}
         </p>
+
+
       </div>
 
       {/* Form */}

@@ -84,10 +84,6 @@ export default function AuthPage() {
             ? 'Masuk untuk mengelola laporan kehilangan dan temuanmu.'
             : 'Daftar gratis dan mulai temukan barangmu.'}
         </p>
-
-        <div className="mt-3 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 text-xs text-amber-700">
-          <strong>Mode Demo:</strong> Gunakan email & password apa saja. Data tersimpan di browser lokal.
-        </div>
       </div>
 
       {/* Form */}
